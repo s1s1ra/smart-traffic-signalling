@@ -1,0 +1,131 @@
+
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>Bootstrap Website Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style>
+        .fakeimg {
+            height: 200px;
+            background: #aaa;
+        }
+        .thumbnail:hover {
+            position:relative;
+            top:-25px;
+            left:-35px;
+            width:500px;
+            height:auto;
+            display:block;
+            z-index:999;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Smart Traffic Signalling</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="row">
+                <h4>Signals - Counts</h4>
+                <ul class="nav nav-pills nav-stacked">
+                    <li id="cnt1"> S1 </li>
+                    <li id="cnt2"> S2 </li>
+                    <li id="cnt3"> S3 </li>
+                    <li id="cnt4"> S4 </li>
+                </ul>
+                </div>
+                <div class="row">
+                <h4>Flag bits</h4>
+                <ul class="nav nav-pills nav-stacked">
+                    <li id="flag1"> S1 - 0 </li>
+                    <li id="flag2"> S2 - 0</li>
+                    <li id="flag3"> S3 - 0</li>
+                    <li id="flag4"> S4 - 0</li>
+                </ul>
+                </div>
+                <hr class="hidden-sm hidden-md hidden-lg">
+            </div>
+            <div class="col-sm-10">
+                <div class="row">
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-4"><img class="thumbnail" src="" id="sig1-img" width="100%" height="100%"></img><br><p id="sig1-cnt"></p></div>
+                    <div class="col-sm-3"></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3"><img class="thumbnail" src="" id="sig2-img" width="100%" height="100%"></img><br><p id="sig2-cnt"></p></div>
+                    <div class="col-sm-4"></div>
+                    <div class="col-sm-3"><img class="thumbnail" src="" id="sig3-img" width="100%" height="100%"></img><br><p id="sig3-cnt"></p></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-4"><img class="thumbnail" src="" id="sig4-img" width="100%" height="100%"></img><br><p id="sig4-cnt"></p></div>
+                    <div class="col-sm-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="jumbotron text-center" style="margin-bottom:0">
+        <p>Footer</p>
+    </div> -->
+<script>
+    function fetchdata(){
+    $.ajax({
+    url: '/fetch_details',
+    type: 'get',
+    success: function(data){
+    // Perform operation on return value
+    var details=JSON.parse(data)
+    console.log(details["0"])
+    for(var i=0;i<4;i++){
+        var greenTime=details[String(i)]["greentime"]
+        if (greenTime>0){
+            document.getElementById("sig"+String(i+1)+"-cnt").style.color="white"
+            document.getElementById("sig"+String(i+1)+"-cnt").style.backgroundColor="green"
+        }
+        else{
+            document.getElementById("sig"+String(i+1)+"-cnt").style.color="black"
+            document.getElementById("sig"+String(i+1)+"-cnt").style.backgroundColor="white"
+        }
+        var imagePath="/static/images/".concat(details[String(i)]["image"]);
+        document.getElementById("sig"+String(i+1)+"-cnt").innerHTML="Vehicle Count: "+details[String(i)]["vehicles"]+"  GreenTime:"+greenTime+"s"
+        document.getElementById("sig"+String(i+1)+"-img").setAttribute("src",String(imagePath))
+        document.getElementById("flag"+String(i+1)).innerHTML="S"+String(i+1)+" - "+details[String(i)]["flag"]
+        document.getElementById("cnt"+String(i+1)).innerHTML="S"+String(i+1)+" - "+details[String(i)]["vehicles"]
+    }
+    },
+    complete:function(data){
+    setTimeout(fetchdata,5000);
+    }
+    });
+    }
+
+    $(document).ready(function(){
+    setTimeout(fetchdata,5000);
+    });
+
+</script>
+</body>
+
+</html>
